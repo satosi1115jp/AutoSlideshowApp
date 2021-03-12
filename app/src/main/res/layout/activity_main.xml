@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:id="@+id/layout1"
-        android:paddingTop="10pt">
+        android:paddingTop="50pt">
 
         <Button
             android:layout_width="100dp"
