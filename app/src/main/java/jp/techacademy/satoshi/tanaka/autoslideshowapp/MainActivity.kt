@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-            if (mtimer == null) {//ToDo　動いているかの判定を行う
+            if (mtimer == null) {
                 mtimer = Timer()
                 Start_Stop.text = "停止"
                 Log.d("Debug", "mtimer(ビフォー)=${mtimer}")
