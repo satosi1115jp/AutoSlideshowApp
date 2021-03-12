@@ -70,8 +70,20 @@ class MainActivity : AppCompatActivity() {
                         mtimerSec += 20
                         mHandler.post {
 
-                            if (Search.isLast()) {
-                                if (Search.moveToFirst()) {
+                            try {
+                                if (Search.isLast()) {
+                                    if (Search.moveToFirst()) {
+                                        val fieldIndex =
+                                            Search.getColumnIndex(MediaStore.Images.Media._ID)
+                                        val id = Search.getLong(fieldIndex)
+                                        val ImageURI =
+                                            ContentUris.withAppendedId(
+                                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                                id
+                                            )
+                                        picture_View.setImageURI(ImageURI)
+                                    }
+                                } else if (Search.moveToNext()) {
                                     val fieldIndex =
                                         Search.getColumnIndex(MediaStore.Images.Media._ID)
                                     val id = Search.getLong(fieldIndex)
@@ -82,17 +94,15 @@ class MainActivity : AppCompatActivity() {
                                         )
                                     picture_View.setImageURI(ImageURI)
                                 }
-                            } else if (Search.moveToNext()) {
-                                val fieldIndex =
-                                    Search.getColumnIndex(MediaStore.Images.Media._ID)
-                                val id = Search.getLong(fieldIndex)
-                                val ImageURI =
-                                    ContentUris.withAppendedId(
-                                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                        id
-                                    )
-                                picture_View.setImageURI(ImageURI)
+                            } catch (e: Exception) {
+                                mtimer!!.cancel()
+                                showAlertDialog()
+                                Start_Stop.text = "再生"
+                                mtimer = null
+
+
                             }
+
                         }
                     }
                 }, 2000, 2000)
@@ -114,10 +124,12 @@ class MainActivity : AppCompatActivity() {
         val Warning_Message = AlertDialog.Builder(this)
         val alertDialog = Warning_Message.create()
 
+
         Warning_Message.setTitle("日本アニメ漫画図書館(JMCL)からのお願い")
         Warning_Message.setMessage(
             "このアプリはお客様のスマートフォン内に保存されている画像にアクセスし、スライドショー形式で表示するものです。\n" +
-                    "そのためお客様におかれましては本アプリからストレージへのアクセスを許可していただきますようお願い申しあげます。\n \n" +
+                    "そのため本アプリからストレージへのアクセスを許可してください。\n" +
+                    "許可されない場合は、ホームボタンやオーバービューボタンなどからアプリを終了させてください \n \n" +
                     "JMACLアプリ制作局"
         )
         Warning_Message.setPositiveButton("やり直す") { _, _ ->
@@ -127,13 +139,13 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        Warning_Message.setNegativeButton("拒否")
+        /*Warning_Message.setNegativeButton("拒否")
         { _, _ ->
-            Log.d("Debug","拒否られました")
+            Log.d("Debug", "拒否られました")
             /*Snackbar.make(View(applicationContext), "スマホのストレージにアクセスができないため本アプリを使用できません", Snackbar.LENGTH_LONG)
                 .show()*/
 
-        }
+        }*/
         Warning_Message.show()
     }
 //private lateinit var Warning_Message:Context
@@ -193,44 +205,56 @@ class MainActivity : AppCompatActivity() {
 
         Next.setOnClickListener {
 
-
-            if (Search.isLast()) {
-                if (Search.moveToFirst()) {
+            if (mtimer == null) {
+                if (Search.isLast()) {
+                    if (Search.moveToFirst()) {
+                        val fieldIndex = Search.getColumnIndex(MediaStore.Images.Media._ID)
+                        val id = Search.getLong(fieldIndex)
+                        val ImageURI =
+                            ContentUris.withAppendedId(
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                id
+                            )
+                        picture_View.setImageURI(ImageURI)
+                    }
+                } else if (Search.moveToNext()) {
                     val fieldIndex = Search.getColumnIndex(MediaStore.Images.Media._ID)
                     val id = Search.getLong(fieldIndex)
                     val ImageURI =
                         ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
                     picture_View.setImageURI(ImageURI)
-                }
-            } else if (Search.moveToNext()) {
-                val fieldIndex = Search.getColumnIndex(MediaStore.Images.Media._ID)
-                val id = Search.getLong(fieldIndex)
-                val ImageURI =
-                    ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-                picture_View.setImageURI(ImageURI)
 
+                }
             }
         }
         Back.setOnClickListener {
+            if (mtimer == null) {
 
+                if (Search.isFirst()) {
+                    if (Search.moveToLast()) {
+                        val fieldIndex = Search.getColumnIndex(MediaStore.Images.Media._ID)
+                        val id = Search.getLong(fieldIndex)
+                        val ImageURI =
+                            ContentUris.withAppendedId(
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                id
+                            )
+                        picture_View.setImageURI(ImageURI)
+                    }
+                } else
+                    if (Search.moveToPrevious()) {
+                        val fieldIndex = Search.getColumnIndex(MediaStore.Images.Media._ID)
+                        val id = Search.getLong(fieldIndex)
+                        val ImageURI =
+                            ContentUris.withAppendedId(
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                id
+                            )
+                        picture_View.setImageURI(ImageURI)
 
-            if (Search.isFirst()) {
-                if (Search.moveToLast()) {
-                    val fieldIndex = Search.getColumnIndex(MediaStore.Images.Media._ID)
-                    val id = Search.getLong(fieldIndex)
-                    val ImageURI =
-                        ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-                    picture_View.setImageURI(ImageURI)
-                }
-            } else
-                if (Search.moveToPrevious()) {
-                    val fieldIndex = Search.getColumnIndex(MediaStore.Images.Media._ID)
-                    val id = Search.getLong(fieldIndex)
-                    val ImageURI =
-                        ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-                    picture_View.setImageURI(ImageURI)
-
-                }
+                    }
+            }
         }
+
     }
 }
